@@ -64,7 +64,7 @@ app.get("/todos/", async (request, response) => {
 
   switch (true) {
     case hasPriorityAndStatusProperties(request.query):
-      getTodosQuery = `
+      getTodosQuery = `  
       SELECT
         *
       FROM
