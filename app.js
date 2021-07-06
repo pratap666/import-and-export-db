@@ -55,8 +55,6 @@ const hasStatusProperty = (requestQuery) => {
   return requestQuery.status !== undefined;
 };
 
-const dateResult = format(2021 - 1 - 21, String, default=0);
-
 app.get("/todos/", async (request, response) => {
   let data = null;
   let getTodosQuery = "";
@@ -143,13 +141,20 @@ app.get("/todos/:todoId/", async (request, response) => {
   response.send(todo);
 });
 
+app.get("/agenda/", async (request, response) => {
+  const date = format(new Date(2021, 1, 21), "yyyy-MM-dd");
+  const getQuery = `SELECT * FROM todo WHERE due_date = ${data};`;
+  const result = await database.get(getQuery);
+  response.send(result);
+});
+
 app.post("/todos/", async (request, response) => {
-  const { id, todo, priority, status, category, due_date } = request.body;
+  const { id, todo, priority, status, category, dueDate } = request.body;
   const postTodoQuery = `
   INSERT INTO
     todo (id, todo, priority, status, category, due_date)
   VALUES
-    (${id}, '${todo}', '${priority}', '${status}', '${category}', '${due_date}');`;
+    (${id}, '${todo}', '${priority}', '${status}', '${category}', '${dueDate}');`;
   await database.run(postTodoQuery);
   response.send("Todo Successfully Added");
 });
