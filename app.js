@@ -55,13 +55,24 @@ const hasStatusProperty = (requestQuery) => {
   return requestQuery.status !== undefined;
 };
 
-const dateResult = format(2021 - 1 - 21, String, default=0);
+//const dateResult = format(2021 - 1 - 21, String);
 
 app.get("/todos/", async (request, response) => {
   let data = null;
   let getTodosQuery = "";
   const { search_q = "", priority, status, category, due_date } = request.query;
 
+  if (priority !== undefined) {
+    if (!(priority === 'HIGH' || priority === 'LOW' || priority === 'MEDIUM')) {
+      response.status(400).send('<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Error</title></head><body><pre>Invalid Todo Priority</pre></body></html>')
+      return
+    }
+  }
+
+
+
+
+  
   switch (true) {
     case hasPriorityAndStatusProperties(request.query):
       getTodosQuery = `  
@@ -128,6 +139,7 @@ app.get("/todos/", async (request, response) => {
 
   data = await database.all(getTodosQuery);
   response.send(data);
+
 });
 
 app.get("/todos/:todoId/", async (request, response) => {
