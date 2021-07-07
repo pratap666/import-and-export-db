@@ -87,7 +87,7 @@ app.get("/todos/", async (request, response) => {
         AND status = '${status}'
         AND priority = '${priority}'
         AND category = '${category}'
-        AND due_date = '${due_date}';`;
+        AND due_date = '${Due_Date}';`;
       break;
     case hasPriorityProperty(request.query):
       getTodosQuery = `
@@ -209,7 +209,7 @@ app.put("/todos/:todoId/", async (request, response) => {
     priority = previousTodo.priority,
     status = previousTodo.status,
     category = previousTodo.category,
-    due_date = previousTodo.due_date,
+    Due_Date = previousTodo.due_date,
   } = request.body;
 
   const updateTodoQuery = `
