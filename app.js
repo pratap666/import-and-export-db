@@ -55,10 +55,25 @@ const hasStatusProperty = (requestQuery) => {
   return requestQuery.status !== undefined;
 };
 
+//const dateResult = format(2021 - 1 - 21, String);
+
 app.get("/todos/", async (request, response) => {
   let data = null;
   let getTodosQuery = "";
   const { search_q = "", priority, status, category, due_date } = request.query;
+
+  if (due_date !== undefined) {
+    date_split = due_date.split("-");
+    Due_Date = date_split[0] + '-' + String(date_split[1]).padStart(2,0) + '-' + String(date_split[2].padStart(2,0))
+  }
+  
+
+  if (priority !== undefined) {
+    if (!(priority === 'HIGH' || priority === 'LOW' || priority === 'MEDIUM')) {
+      response.status(400).send('<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Error</title></head><body><pre>Invalid Todo Priority</pre></body></html>')
+      return
+    }
+  }
 
   switch (true) {
     case hasPriorityAndStatusProperties(request.query):
@@ -72,7 +87,7 @@ app.get("/todos/", async (request, response) => {
         AND status = '${status}'
         AND priority = '${priority}'
         AND category = '${category}'
-        AND due_date = '${due_date}';`;
+        AND due_date = '${Due_Date}';`;
       break;
     case hasPriorityProperty(request.query):
       getTodosQuery = `
@@ -105,14 +120,14 @@ app.get("/todos/", async (request, response) => {
         AND category = '${category}';`;
       break;
     case hasDueDateProperty(request.query):
-      getTodosQuery`
+      getTodosQuery = `
         SELECT 
         * 
         FROM 
         todo 
         WHERE 
         todo LIKE '%${search_q}%'
-        AND due_date = '${due_date}';`;
+        AND due_date = '${Due_Date}';`;
       break;
     default:
       getTodosQuery = `
@@ -126,6 +141,7 @@ app.get("/todos/", async (request, response) => {
 
   data = await database.all(getTodosQuery);
   response.send(data);
+
 });
 
 app.get("/todos/:todoId/", async (request, response) => {
@@ -177,6 +193,7 @@ app.put("/todos/:todoId/", async (request, response) => {
     case requestBody.due_date !== undefined:
       updateColumn = "due_date";
       break;
+    
   }
   const previousTodoQuery = `
     SELECT
@@ -192,7 +209,7 @@ app.put("/todos/:todoId/", async (request, response) => {
     priority = previousTodo.priority,
     status = previousTodo.status,
     category = previousTodo.category,
-    due_date = previousTodo.due_date,
+    Due_Date = previousTodo.due_date,
   } = request.body;
 
   const updateTodoQuery = `
